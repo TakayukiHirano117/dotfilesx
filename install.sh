@@ -15,6 +15,7 @@ TARGET_HOME="${HOME}"
 DRY_RUN=0
 SKIP_BREW=0
 SKIP_EXTRAS=0
+ONLY=""
 
 usage() {
   cat <<'EOF'
@@ -23,8 +24,14 @@ Usage: ./install.sh [options]
   --dry-run     実行内容を表示するだけ（ファイルは変更しない）
   --skip-brew   Homebrew / Brewfile をスキップ（symlink 確認用）
   --skip-extras fisher / vim-plug / シェル変更案内をスキップ
+  --only NAME   指定した設定だけリンクする（brew / extras は自動スキップ）
   --home DIR    リンク先のホームを DIR にする（動作確認用）
   -h, --help    このヘルプ
+
+  --only に使える NAME:
+    fish  fish-plugins  nvim  nvim-coc  karabiner  linearmouse
+    gitconfig  git-ignore  gh
+    cursor-settings  cursor-keybindings  cursor-tasks
 EOF
 }
 
@@ -33,6 +40,10 @@ while [ $# -gt 0 ]; do
     --dry-run) DRY_RUN=1 ;;
     --skip-brew) SKIP_BREW=1 ;;
     --skip-extras) SKIP_EXTRAS=1 ;;
+    --only)
+      shift
+      ONLY="$1"
+      ;;
     --home)
       shift
       TARGET_HOME="$1"
@@ -142,19 +153,62 @@ install_brewfile() {
   run brew bundle --file="${REPO_DIR}/Brewfile"
 }
 
+should_link() {
+  local name="$1"
+  if [ -z "$ONLY" ]; then
+    return 0
+  fi
+  [ "$ONLY" = "$name" ]
+}
+
+known_only_name() {
+  case "$1" in
+    fish|fish-plugins|nvim|nvim-coc|karabiner|linearmouse|gitconfig|git-ignore|gh|cursor-settings|cursor-keybindings|cursor-tasks)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 link_dotfiles() {
-  backup_and_link "${REPO_DIR}/fish/config.fish" "${TARGET_HOME}/.config/fish/config.fish"
-  backup_and_link "${REPO_DIR}/fish/fish_plugins" "${TARGET_HOME}/.config/fish/fish_plugins"
-  backup_and_link "${REPO_DIR}/nvim/init.vim" "${TARGET_HOME}/.config/nvim/init.vim"
-  backup_and_link "${REPO_DIR}/nvim/coc-settings.json" "${TARGET_HOME}/.config/nvim/coc-settings.json"
-  backup_and_link "${REPO_DIR}/karabiner/karabiner.json" "${TARGET_HOME}/.config/karabiner/karabiner.json"
-  backup_and_link "${REPO_DIR}/linearmouse/linearmouse.json" "${TARGET_HOME}/.config/linearmouse/linearmouse.json"
-  backup_and_link "${REPO_DIR}/git/gitconfig" "${TARGET_HOME}/.gitconfig"
-  backup_and_link "${REPO_DIR}/git/ignore" "${TARGET_HOME}/.config/git/ignore"
-  backup_and_link "${REPO_DIR}/gh/config.yml" "${TARGET_HOME}/.config/gh/config.yml"
-  backup_and_link "${REPO_DIR}/cursor/settings.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/settings.json"
-  backup_and_link "${REPO_DIR}/cursor/keybindings.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/keybindings.json"
-  backup_and_link "${REPO_DIR}/cursor/tasks.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/tasks.json"
+  if should_link fish; then
+    backup_and_link "${REPO_DIR}/fish/config.fish" "${TARGET_HOME}/.config/fish/config.fish"
+  fi
+  if should_link fish-plugins; then
+    backup_and_link "${REPO_DIR}/fish/fish_plugins" "${TARGET_HOME}/.config/fish/fish_plugins"
+  fi
+  if should_link nvim; then
+    backup_and_link "${REPO_DIR}/nvim/init.vim" "${TARGET_HOME}/.config/nvim/init.vim"
+  fi
+  if should_link nvim-coc; then
+    backup_and_link "${REPO_DIR}/nvim/coc-settings.json" "${TARGET_HOME}/.config/nvim/coc-settings.json"
+  fi
+  if should_link karabiner; then
+    backup_and_link "${REPO_DIR}/karabiner/karabiner.json" "${TARGET_HOME}/.config/karabiner/karabiner.json"
+  fi
+  if should_link linearmouse; then
+    backup_and_link "${REPO_DIR}/linearmouse/linearmouse.json" "${TARGET_HOME}/.config/linearmouse/linearmouse.json"
+  fi
+  if should_link gitconfig; then
+    backup_and_link "${REPO_DIR}/git/gitconfig" "${TARGET_HOME}/.gitconfig"
+  fi
+  if should_link git-ignore; then
+    backup_and_link "${REPO_DIR}/git/ignore" "${TARGET_HOME}/.config/git/ignore"
+  fi
+  if should_link gh; then
+    backup_and_link "${REPO_DIR}/gh/config.yml" "${TARGET_HOME}/.config/gh/config.yml"
+  fi
+  if should_link cursor-settings; then
+    backup_and_link "${REPO_DIR}/cursor/settings.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/settings.json"
+  fi
+  if should_link cursor-keybindings; then
+    backup_and_link "${REPO_DIR}/cursor/keybindings.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/keybindings.json"
+  fi
+  if should_link cursor-tasks; then
+    backup_and_link "${REPO_DIR}/cursor/tasks.json" "${TARGET_HOME}/Library/Application Support/Cursor/User/tasks.json"
+  fi
 }
 
 install_fisher() {
@@ -218,9 +272,19 @@ gitconfig の email は転職先用に書き換えてください:
 EOF
 }
 
+if [ -n "$ONLY" ]; then
+  if ! known_only_name "$ONLY"; then
+    echo "unknown --only name: $ONLY" >&2
+    usage >&2
+    exit 1
+  fi
+  SKIP_BREW=1
+  SKIP_EXTRAS=1
+fi
+
 log "repo: ${REPO_DIR}"
 log "home: ${TARGET_HOME}"
-log "dry-run: ${DRY_RUN}  skip-brew: ${SKIP_BREW}  skip-extras: ${SKIP_EXTRAS}"
+log "dry-run: ${DRY_RUN}  skip-brew: ${SKIP_BREW}  skip-extras: ${SKIP_EXTRAS}  only: ${ONLY:-all}"
 
 if [ "$SKIP_BREW" -eq 0 ]; then
   if [ "$TARGET_HOME" != "$HOME" ]; then

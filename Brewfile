@@ -31,8 +31,15 @@ brew "tree"
 brew "wget"
 
 # GUI / fonts
+cask "aqua-voice"
+cask "claude"
 cask "clipy"
+# https://formulae.brew.sh/cask/codex （ターミナル）
+cask "codex"
+# https://formulae.brew.sh/cask/codex-app （デスクトップ。公式は deprecated）
+cask "codex-app"
 cask "cursor"
+cask "dbeaver-community"
 cask "docker-desktop"
 cask "font-meslo-lg-nerd-font"
 cask "font-source-code-pro"

@@ -13,7 +13,7 @@ cd dotfilesx
 `./install.sh` が [Homebrew の公式インストーラ](https://raw.githubusercontent.com/Homebrew/install/HEAD/README.md) を入れたあと、[`brew bundle`](https://docs.brew.sh/Manpage#bundle-subcommand) で `Brewfile` を実行する。`Brewfile` に書いてあるものはここから入る。
 
 - CLI: `fish` / `git` / `gh` / `neovim` / `tmux` / `fzf` / `ripgrep` など
-- GUI: Cursor / Docker Desktop / iTerm2 / Karabiner-Elements / LinearMouse / Rectangle / Clipy / Chrome など
+- GUI: Cursor / Docker Desktop / iTerm2 / Karabiner-Elements / LinearMouse / Rectangle / Clipy / Chrome / DBeaver / Claude / Codex（CLI + デスクトップ） / Aqua Voice など（cask。`brew bundle` は既存アプリに [`--adopt`](https://docs.brew.sh/Manpage#install-formula-options) を付ける）
 - Cursor 拡張（`Brewfile` の `vscode "..."`）
 - 設定ファイルの symlink
 - fisher と vim-plug
@@ -34,6 +34,32 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 ```
 
 `--home` を付けた場合、Brewfile は実行しない。
+
+1ファイルだけ試す:
+
+```sh
+./install.sh --only git-ignore
+./rollback.sh --only git-ignore
+```
+
+`--only` を付けると brew / extras は走らない。
+
+### 切り戻し
+
+`install.sh` をミスったときは、同じホームに対して:
+
+```sh
+./rollback.sh --dry-run
+./rollback.sh
+```
+
+偽ホームで試したなら:
+
+```sh
+./rollback.sh --home /tmp/dotfilesx-test
+```
+
+このリポジトリへ向いている symlink だけを外し、`install.sh` が作った最新の `*.bak.YYYYMMDDHHMMSS` を元に戻す。Homebrew で入れたアプリは消さない。
 
 ## 管理しているもの
 
