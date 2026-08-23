@@ -1,1 +1,84 @@
-# README
+# dotfilesx
+
+新しい Mac で開発環境を再現するための dotfiles。設定はシンボリックリンク、ツールは Homebrew Bundle。
+
+## 初日
+
+```sh
+git clone <this-repo>
+cd dotfilesx
+./install.sh
+```
+
+`./install.sh` が [Homebrew の公式インストーラ](https://raw.githubusercontent.com/Homebrew/install/HEAD/README.md) を入れたあと、[`brew bundle`](https://docs.brew.sh/Manpage#bundle-subcommand) で `Brewfile` を実行する。`Brewfile` に書いてあるものはここから入る。
+
+- CLI: `fish` / `git` / `gh` / `neovim` / `tmux` / `fzf` / `ripgrep` など
+- GUI: Cursor / Docker Desktop / iTerm2 / Karabiner-Elements / LinearMouse / Rectangle / Clipy / Chrome など
+- Cursor 拡張（`Brewfile` の `vscode "..."`）
+- 設定ファイルの symlink
+- fisher と vim-plug
+
+fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要はない。
+
+既存ファイルがある場合は `*.bak.YYYYMMDDHHMMSS` に退避してからリンクする。
+
+### 後で直すこと: gitconfig
+
+`git/gitconfig` には、今の個人用の名前とメールアドレスが入っている。転職先の PC では会社用に書き換えること。このままだと個人メールで commit される。
+
+### 今の PC を壊さずに確認する
+
+```sh
+./install.sh --dry-run --skip-brew --home /tmp/dotfilesx-test
+./install.sh --skip-brew --home /tmp/dotfilesx-test
+```
+
+`--home` を付けた場合、Brewfile は実行しない。
+
+## 管理しているもの
+
+| リポジトリ | リンク先 |
+|---|---|
+| `fish/config.fish` | `~/.config/fish/config.fish` |
+| `fish/fish_plugins` | `~/.config/fish/fish_plugins` |
+| `nvim/init.vim` | `~/.config/nvim/init.vim` |
+| `nvim/coc-settings.json` | `~/.config/nvim/coc-settings.json` |
+| `karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` |
+| `linearmouse/linearmouse.json` | `~/.config/linearmouse/linearmouse.json` |
+| `git/gitconfig` | `~/.gitconfig` |
+| `git/ignore` | `~/.config/git/ignore` |
+| `gh/config.yml` | `~/.config/gh/config.yml` |
+| `cursor/settings.json` | `~/Library/Application Support/Cursor/User/settings.json` |
+| `cursor/keybindings.json` | `~/Library/Application Support/Cursor/User/keybindings.json` |
+| `cursor/tasks.json` | `~/Library/Application Support/Cursor/User/tasks.json` |
+
+`cursor/tasks.json` はユーザー全体用。中身は空。プロジェクト用タスクは各リポジトリの `.vscode/tasks.json` に置く。
+
+## 入れないもの
+
+- `.ssh`（転職先で鍵を作り直す）
+- AWS credentials、API key、`gh` の `hosts.yml`、`fish_variables`
+- LINE / Prime Video など個人アプリ
+- TablePlus
+- zsh 設定
+
+## スクリプトだけでは終わらないもの
+
+ログインシェルの変更は `sudo` が必要なので、`install.sh` の最後にコマンドを出す。表示された `chsh` を一度実行する。
+
+Homebrew 外の実体は初日スクリプトでは入れない。
+
+- [nvm](https://github.com/nvm-sh/nvm)（今の Node はこれ）
+- [bun](https://bun.sh)
+- Laravel Herd Lite（今の `php` / `composer`）
+- 公式の Go インストーラ（今の `go` は `/usr/local/go`）
+- SSH 鍵（転職先で新規作成）
+- `gh auth login`
+
+## 参照
+
+- Homebrew インストール: https://raw.githubusercontent.com/Homebrew/install/HEAD/README.md
+- `brew bundle`: https://docs.brew.sh/Manpage#bundle-subcommand
+- fisher: https://github.com/jorgebucaran/fisher
+- vim-plug (Neovim): https://github.com/junegunn/vim-plug#neovim
+- User tasks: https://code.visualstudio.com/docs/debugtest/tasks

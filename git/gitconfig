@@ -1,0 +1,12 @@
+[user]
+	name = TakayukiHirano117
+	email = ikusa.hirano@icloud.com
+[safe]
+	directory = /app
+[core]
+	excludesfile = .gitignore_global
+	fsmonitor = false
+[init]
+	defaultBranch = main
+[credential]
+	helper = osxkeychain
