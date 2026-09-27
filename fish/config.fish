@@ -18,6 +18,10 @@ set -Ux PATH $PATH $HOME/go/bin
 set -gx PATH $HOME/go/bin $PATH
 set -gx PATH /opt/homebrew/bin $PATH
 set -gx PATH $HOME/.bun/bin $PATH
+set -Ux AWS_PROFILE hirano-ta
+# set -Ux AWS_DEFAULT_REGION hirano-ta
+# set -Ux AWS_ACCESS_KEY_ID hirano-ta
+# set -Ux AWS_SECRET_ACCESS_KEY hirano-ta
 alias sail='sh (test -f sail; and echo sail; or echo vendor/bin/sail)'
 
 alias pest='/usr/local/opt/php@8.2/bin/php ./vendor/bin/pest'
@@ -36,3 +40,7 @@ end
 set -Ux PATH $HOME/.rbenv/bin $PATH
 status --is-interactive; and source (rbenv init -|psub)
 status --is-interactive; and rbenv init - fish | source
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/takayukihirano117/google-cloud-sdk/path.fish.inc' ]; . '/Users/takayukihirano117/google-cloud-sdk/path.fish.inc'; end
+

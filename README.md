@@ -16,6 +16,7 @@ cd dotfilesx
 - GUI: Cursor / Docker Desktop / iTerm2 / Karabiner-Elements / LinearMouse / Rectangle / Clipy / Chrome / DBeaver / Claude / Codex（CLI + デスクトップ） / Aqua Voice など（cask。`brew bundle` は既存アプリに [`--adopt`](https://docs.brew.sh/Manpage#install-formula-options) を付ける）
 - Cursor 拡張（`Brewfile` の `vscode "..."`）
 - 設定ファイルの symlink
+- macOS のポインタとキーリピート（`macos/defaults.sh`）
 - fisher と vim-plug
 
 fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要はない。
@@ -33,16 +34,17 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 ./install.sh --skip-brew --home /tmp/dotfilesx-test
 ```
 
-`--home` を付けた場合、Brewfile は実行しない。
+`--home` を付けた場合、Brewfile と macos defaults は実行しない。
 
 1ファイルだけ試す:
 
 ```sh
 ./install.sh --only git-ignore
 ./rollback.sh --only git-ignore
+./install.sh --only macos --dry-run
 ```
 
-`--only` を付けると brew / extras は走らない。
+`--only` を付けると brew / extras は走らない。`--only macos` はポインタとキーリピートだけ書く。
 
 ### 切り戻し
 
@@ -77,8 +79,16 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 | `cursor/settings.json` | `~/Library/Application Support/Cursor/User/settings.json` |
 | `cursor/keybindings.json` | `~/Library/Application Support/Cursor/User/keybindings.json` |
 | `cursor/tasks.json` | `~/Library/Application Support/Cursor/User/tasks.json` |
+| `macos/defaults.sh` | シンボリックリンクではない。`defaults` でシステム設定を書く |
 
 `cursor/tasks.json` はユーザー全体用。中身は空。プロジェクト用タスクは各リポジトリの `.vscode/tasks.json` に置く。
+
+`macos/defaults.sh` が書くのは、このマシンで確認した次の値。
+
+- ポインタのサイズと色（システム設定 > アクセシビリティ > ディスプレイ > ポインタ。[公式](https://support.apple.com/ja-jp/guide/mac-help/unac089/mac)）
+- キーリピート（システム設定 > キーボード。[公式](https://support.apple.com/ja-jp/guide/mac-help/mchl0311bdb4/mac)。Delete 長押しで文字が消える速さ）
+
+キー名（`mouseDriverCursorSize` など）は Apple の公開ドキュメントには無い。2026-08-23 の macOS 15.5 で `defaults read` して取った。効き方はログアウトまたは再起動後が確実なことがある。`rollback.sh` では戻さない。
 
 ## 入れないもの
 
@@ -108,3 +118,5 @@ Homebrew 外の実体は初日スクリプトでは入れない。
 - fisher: https://github.com/jorgebucaran/fisher
 - vim-plug (Neovim): https://github.com/junegunn/vim-plug#neovim
 - User tasks: https://code.visualstudio.com/docs/debugtest/tasks
+- ポインタ: https://support.apple.com/ja-jp/guide/mac-help/unac089/mac
+- キーリピート: https://support.apple.com/ja-jp/guide/mac-help/mchl0311bdb4/mac

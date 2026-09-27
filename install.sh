@@ -32,6 +32,7 @@ Usage: ./install.sh [options]
     fish  fish-plugins  nvim  nvim-coc  karabiner  linearmouse
     gitconfig  git-ignore  gh
     cursor-settings  cursor-keybindings  cursor-tasks
+    macos
 EOF
 }
 
@@ -163,7 +164,7 @@ should_link() {
 
 known_only_name() {
   case "$1" in
-    fish|fish-plugins|nvim|nvim-coc|karabiner|linearmouse|gitconfig|git-ignore|gh|cursor-settings|cursor-keybindings|cursor-tasks)
+    fish|fish-plugins|nvim|nvim-coc|karabiner|linearmouse|gitconfig|git-ignore|gh|cursor-settings|cursor-keybindings|cursor-tasks|macos)
       return 0
       ;;
     *)
@@ -224,6 +225,19 @@ install_fisher() {
   fi
 
   fish -c 'if not functions -q fisher; curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source; fisher install jorgebucaran/fisher; end; fisher update'
+}
+
+apply_macos_defaults() {
+  if [ "$TARGET_HOME" != "$HOME" ]; then
+    log "TARGET_HOME が実際の HOME と違うので macos defaults は実行しません"
+    return 0
+  fi
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    "${REPO_DIR}/macos/defaults.sh" --dry-run
+    return 0
+  fi
+  "${REPO_DIR}/macos/defaults.sh"
 }
 
 install_vimplug() {
@@ -296,6 +310,10 @@ if [ "$SKIP_BREW" -eq 0 ]; then
 fi
 
 link_dotfiles
+
+if [ -z "$ONLY" ] || [ "$ONLY" = "macos" ]; then
+  apply_macos_defaults
+fi
 
 if [ "$SKIP_EXTRAS" -eq 0 ]; then
   if [ "$TARGET_HOME" != "$HOME" ]; then

@@ -59,17 +59,22 @@
   {
     "key": "enter",
     "command": "list.select",
-    "when": "explorerViewletVisible && listFocus",
+    "when": "explorerViewletVisible && listFocus && !inputFocus",
   },
   {
     "key": "space",
-    "command": "workbench.files.action.focusFilesExplorer",
+    "command": "workbench.action.focusSideBar",
     "when": "editorTextFocus && neovim.mode == 'normal'",
   },
   {
     "key": "space",
+    "command": "-list.select",
+    "when": "explorerViewletVisible && listFocus && !inputFocus",
+  },
+  {
+    "key": "space",
     "command": "workbench.action.focusActiveEditorGroup",
-    "when": "explorerViewletVisible && listFocus",
+    "when": "explorerViewletVisible && listFocus && !inputFocus",
   },
   {
     "key": "ctrl+e",
@@ -80,23 +85,85 @@
     "command": "workbench.view.search",
   },
   {
-    "key": "ctrl+f",
-    "command": "workbench.action.findInFiles",
+    "key": "ctrl+shift+r",
+    "command": "workbench.action.tasks.runTask",
+    "args": "RSpec in Docker (Current Line)",
+  },
+  {
+    "key": "ctrl+shift+f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "RSpec in Docker (Entire File)",
+  },
+  {
+    "key": "ctrl+shift+a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "RSpec in Docker (All Tests)",
   },
   {
     "key": "ctrl+g",
     "command": "workbench.view.scm",
   },
   {
-    "key": "ctrl+shift+f",
+    "key": "ctrl+shift+t",
     "command": "workbench.action.tasks.runTask",
-    "args": "Vitest: Current File",
+    "args": "Jest: Current Line",
   },
   {
-    "key": "ctrl+shift+r",
+    "key": "ctrl+shift+z",
     "command": "workbench.action.tasks.runTask",
-    "args": "Vitest: Current Line",
+    "args": "Jest: Selected Test",
   },
+  {
+    "key": "ctrl+shift+w",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Playwright: Current File",
+  },
+  {
+    "key": "ctrl+shift+q",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Playwright: Current Line",
+  },
+  // {
+  //   "key": "ctrl+shift+r",
+  //   "command": "workbench.action.tasks.runTask",
+  //   "args": "Playwright: Current Line --debug --headed"
+  // },
+  // {
+  //    "command": "germanScroll.arminUp",
+  //    "key": "ctrl+y",
+  //    "mac": "cmd+y",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
+  // {
+  //    "command": "germanScroll.arminDown",
+  //    "key": "ctrl+e",
+  //    "mac": "cmd+e",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
+  // {
+  //    "command": "germanScroll.bertholdUp",
+  //    "key": "ctrl+u",
+  //    "mac": "cmd+u",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
+  // {
+  //    "command": "germanScroll.bertholdDown",
+  //    "key": "ctrl+d",
+  //    "mac": "cmd+d",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
+  // {
+  //    "command": "germanScroll.christaUp",
+  //    "key": "ctrl+b",
+  //    "mac": "cmd+b",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
+  // {
+  //    "command": "germanScroll.christaDown",
+  //    "key": "ctrl+f",
+  //    "mac": "cmd+f",
+  //    "when": "vim.active && editorTextFocus && vim.mode != 'Insert'"
+  // },
   {
     "key": "ctrl+shift+h",
     "command": "workbench.action.moveEditorLeftInGroup",
@@ -104,6 +171,10 @@
   {
     "key": "ctrl+shift+l",
     "command": "workbench.action.moveEditorRightInGroup",
+  },
+  {
+    "key": "ctrl+shift+c",
+    "command": "claude-vscode.sidebar.open",
   },
   {
     "key": "ctrl+shift+k",
@@ -116,22 +187,10 @@
     "when": "editorTextFocus",
   },
   {
-    "key": "alt+cmd+s",
-    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
-    "when": "!isAuxiliaryWindowFocusedContext",
-  },
-  {
-    "key": "alt+o",
-    "command": "chatgpt.addToThread",
-  },
-  // {
-  //   "key": "ctrl+shift+l",
-  //   "command": "workbench.action.tasks.runTask",
-  //   "args": "pest sail (Filter)"
-  // },
-  // {
-  //   "key": "ctrl+shift+f",
-  //   "command": "workbench.action.tasks.runTask",
-  //   "args": "pest sail (Current File)"
-  // },
+    "command": "vscode-neovim.send",
+    "key": "alt+d",
+    "args": "<M-d>",
+    "when": "editorFocus && neovim.init",
+  }
 ]
+

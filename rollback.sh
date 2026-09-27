@@ -25,8 +25,8 @@ Usage: ./rollback.sh [options]
   --home DIR    対象ホームを DIR にする（動作確認用）
   -h, --help    このヘルプ
 
-  --only に使える NAME は install.sh と同じ。
-  Homebrew / fisher / vim-plug / chsh は元に戻さない。
+  --only に使える NAME は install.sh と同じ（macos 以外）。
+  Homebrew / fisher / vim-plug / chsh / macos defaults は元に戻さない。
 EOF
 }
 
