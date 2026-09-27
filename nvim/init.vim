@@ -487,6 +487,10 @@ require("onedark").setup({
     BookmarkAnnotationSign = { fg = "#7FB4CA", bg = "#282C34", fmt = "bold" },
     CurrentWord = { fg = "none", bg = "#264F78", fmt = "bold,underline" },
     CurrentWordTwins = { fg = "none", bg = "#30363D", fmt = "underline" },
+    -- treesitter の task list は comments の italic を流用している。
+    -- https://github.com/navarasu/onedark.nvim/blob/master/lua/onedark/highlights.lua
+    ["@markup.list.unchecked"] = { fg = "#E86671", fmt = "none" },
+    ["@markup.list.checked"] = { fg = "#98C379", fmt = "none" },
   },
 })
 require("onedark").load()

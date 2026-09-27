@@ -86,6 +86,7 @@ set -g fish_pager_color_selected_background --background=3e4451
 set -g theme_display_user yes
 set -g theme_display_ruby no
 set -g theme_display_git_default_branch yes
+set -g theme_nerd_fonts yes
 
 # bobthefish は __bobthefish_colors のあとに bobthefish_colors を呼ぶ。
 # 値は「背景 前景 [フラグ]」の順。-S が無いと set が関数スコープに閉じて効かない。

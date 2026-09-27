@@ -32,7 +32,7 @@ Usage: ./install.sh [options]
     fish  fish-plugins  nvim  nvim-coc  karabiner  linearmouse
     gitconfig  git-ignore  gh
     cursor-settings  cursor-keybindings  cursor-tasks
-    macos
+    macos  iterm
 EOF
 }
 
@@ -213,7 +213,7 @@ should_link() {
 
 known_only_name() {
   case "$1" in
-    fish|fish-plugins|nvim|nvim-coc|karabiner|linearmouse|gitconfig|git-ignore|gh|cursor-settings|cursor-keybindings|cursor-tasks|macos)
+    fish|fish-plugins|nvim|nvim-coc|karabiner|linearmouse|gitconfig|git-ignore|gh|cursor-settings|cursor-keybindings|cursor-tasks|macos|iterm)
       return 0
       ;;
     *)
@@ -297,6 +297,19 @@ apply_macos_defaults() {
   fi
 }
 
+apply_iterm() {
+  if [ "$TARGET_HOME" != "$HOME" ]; then
+    log "TARGET_HOME が実際の HOME と違うので iTerm 配色は実行しません"
+    return 0
+  fi
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    "${REPO_DIR}/iterm/apply.sh" --dry-run
+    return 0
+  fi
+  "${REPO_DIR}/iterm/apply.sh"
+}
+
 install_vimplug() {
   local plug="${TARGET_HOME}/.local/share/nvim/site/autoload/plug.vim"
 
@@ -371,6 +384,10 @@ link_dotfiles
 
 if [ -z "$ONLY" ] || [ "$ONLY" = "macos" ]; then
   apply_macos_defaults
+fi
+
+if [ -z "$ONLY" ] || [ "$ONLY" = "iterm" ]; then
+  apply_iterm
 fi
 
 if [ "$SKIP_EXTRAS" -eq 0 ]; then

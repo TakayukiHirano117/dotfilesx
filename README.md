@@ -80,6 +80,7 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 | `cursor/keybindings.json` | `~/Library/Application Support/Cursor/User/keybindings.json` |
 | `cursor/tasks.json` | `~/Library/Application Support/Cursor/User/tasks.json` |
 | `macos/defaults.sh` | シンボリックリンクではない。`defaults` でシステム設定を書く |
+| `iterm/OneDark.itermcolors` / `iterm/OneDark.dynamic.json` | シンボリックリンクではない。iTerm Dynamic Profile「One Dark」として読む |
 
 `cursor/tasks.json` はユーザー全体用。中身は空。プロジェクト用タスクは各リポジトリの `.vscode/tasks.json` に置く。
 
