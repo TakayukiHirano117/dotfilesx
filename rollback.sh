@@ -166,7 +166,7 @@ if should_restore nvim-coc; then
   restore_one "${TARGET_HOME}/.config/nvim/coc-settings.json"
 fi
 if should_restore karabiner; then
-  restore_one "${TARGET_HOME}/.config/karabiner/karabiner.json"
+  restore_one "${TARGET_HOME}/.config/karabiner"
 fi
 if should_restore linearmouse; then
   restore_one "${TARGET_HOME}/.config/linearmouse/linearmouse.json"

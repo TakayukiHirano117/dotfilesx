@@ -58,11 +58,25 @@ run() {
   "$@"
 }
 
+POINTER_FAILED=0
+
+# com.apple.universalaccess は macOS の System Policy で保護されている。
+# 権限が無いターミナルからは `Could not write domain com.apple.universalaccess; exiting` で拒否される
+# （統合ログ: kernel Sandbox "deny(1) user-preference-write com.apple.universalaccess"）。
+# ここで止めずにキーリピートまで進める。
+write_pointer() {
+  if run defaults write com.apple.universalaccess "$@"; then
+    return 0
+  fi
+  POINTER_FAILED=1
+  return 0
+}
+
 # 塗りつぶしは赤寄りのオレンジ、枠線は白、サイズは 2（このマシンの実値）。
-run defaults write com.apple.universalaccess mouseDriverCursorSize -float 2
-run defaults write com.apple.universalaccess cursorIsCustomized -bool true
-run defaults write com.apple.universalaccess cursorFill '{ alpha = 1; blue = 0; green = 0.1491314173; red = 1; }'
-run defaults write com.apple.universalaccess cursorOutline '{ alpha = 1; blue = 1; green = 1; red = 1; }'
+write_pointer mouseDriverCursorSize -float 2
+write_pointer cursorIsCustomized -bool true
+write_pointer cursorFill '{ alpha = 1; blue = 0; green = 0.1491314173; red = 1; }'
+write_pointer cursorOutline '{ alpha = 1; blue = 1; green = 1; red = 1; }'
 
 # KeyRepeat=2 / InitialKeyRepeat=15 はこのマシンの実値。
 # ApplePressAndHoldEnabled=0 もこのマシンの実値。長押しのアクセントメニューを出さず、連続入力する。
@@ -71,6 +85,13 @@ run defaults write com.apple.universalaccess cursorOutline '{ alpha = 1; blue = 
 run defaults write -g KeyRepeat -int 2
 run defaults write -g InitialKeyRepeat -int 15
 run defaults write -g ApplePressAndHoldEnabled -bool false
+
+if [ "$POINTER_FAILED" -eq 1 ]; then
+  log "WARN: ポインタ設定（com.apple.universalaccess）を書けなかった。キーリピートは書いた"
+  log "  システム設定 > プライバシーとセキュリティ > フルディスクアクセス で、このターミナルアプリを許可して再起動し、"
+  log "  ./install.sh --only macos を実行し直す。または システム設定 > アクセシビリティ > ディスプレイ > ポインタ で手で設定する"
+  exit 1
+fi
 
 log "macos defaults applied"
 log "ポインタとキーリピートは、ログアウトまたは再起動のあと確実に効くことがある"

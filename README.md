@@ -71,7 +71,7 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 | `fish/fish_plugins` | `~/.config/fish/fish_plugins` |
 | `nvim/init.vim` | `~/.config/nvim/init.vim` |
 | `nvim/coc-settings.json` | `~/.config/nvim/coc-settings.json` |
-| `karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` |
+| `karabiner/` | `~/.config/karabiner` |
 | `linearmouse/linearmouse.json` | `~/.config/linearmouse/linearmouse.json` |
 | `git/gitconfig` | `~/.gitconfig` |
 | `git/ignore` | `~/.config/git/ignore` |
@@ -89,6 +89,8 @@ fish も `Brewfile` の `brew "fish"` なので、別途自分で入れる必要
 - キーリピート（システム設定 > キーボード。[公式](https://support.apple.com/ja-jp/guide/mac-help/mchl0311bdb4/mac)。Delete 長押しで文字が消える速さ）
 
 キー名（`mouseDriverCursorSize` など）は Apple の公開ドキュメントには無い。2026-08-23 の macOS 15.5 で `defaults read` して取った。効き方はログアウトまたは再起動後が確実なことがある。`rollback.sh` では戻さない。
+
+ポインタ側の `com.apple.universalaccess` は macOS が保護していて、権限の無いターミナルからは `Could not write domain com.apple.universalaccess; exiting` で拒否される（macOS 15.5 で確認。統合ログに `Sandbox ... deny(1) user-preference-write com.apple.universalaccess`）。その場合もキーリピートと以降の処理は続く。ターミナルアプリ（iTerm2 / Cursor など）を システム設定 > プライバシーとセキュリティ > [フルディスクアクセス](https://support.apple.com/ja-jp/guide/mac-help/mchlccb25729/mac) に追加して再起動し、`./install.sh --only macos` をやり直す。フルディスクアクセスで通るという報告は第三者のもの（[mathiasbynens/dotfiles#1027](https://github.com/mathiasbynens/dotfiles/issues/1027)）。
 
 ## 入れないもの
 

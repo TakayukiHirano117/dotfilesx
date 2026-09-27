@@ -36,6 +36,9 @@ cask "aqua-voice"
 cask "claude"
 cask "clipy"
 # https://formulae.brew.sh/cask/codex （ターミナル）
+# npm の @openai/codex が /opt/homebrew/bin/codex を握っていると失敗する。
+# cask の binary は他由来の symlink を上書きしない（--force でも不可）。先に npm 版を消すこと。
+# `--overwrite` は formula 用で `--cask` と併用不可（Homebrew cmd/install.rb の conflicts）
 cask "codex"
 # https://formulae.brew.sh/cask/codex-app （デスクトップ。公式は deprecated）
 cask "codex-app"

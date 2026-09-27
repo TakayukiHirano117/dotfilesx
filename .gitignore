@@ -1,3 +1,4 @@
 .DS_Store
 *.log
 nvim.log
+karabiner/automatic_backups/

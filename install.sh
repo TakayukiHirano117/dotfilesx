@@ -113,6 +113,42 @@ backup_and_link() {
   log "link: $dest -> $src"
 }
 
+SUDO_KEEPALIVE_PID=""
+
+# docker-desktop / karabiner-elements は cask の中で /usr/bin/sudo を呼ぶ。
+# brew 自体は root で動かせない（Homebrew/brew.sh の check-run-command-as-root）ので、
+# 親プロセスで先に認証をキャッシュして内部の sudo を通す。
+ensure_sudo() {
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log "DRY-RUN: sudo -v"
+    return 0
+  fi
+
+  if sudo -n true 2>/dev/null; then
+    log "sudo already authenticated"
+  elif [ -t 0 ]; then
+    sudo -v
+  else
+    echo "対話ターミナルではないため sudo 認証ができません。" >&2
+    echo "Terminal.app / iTerm から ./install.sh を実行してください。" >&2
+    exit 1
+  fi
+
+  # bundle は数分かかるので sudo のタイムスタンプを延命する
+  while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" 2>/dev/null || exit
+  done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+}
+
+stop_sudo_keepalive() {
+  [ -n "$SUDO_KEEPALIVE_PID" ] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null
+  return 0
+}
+trap stop_sudo_keepalive EXIT
+
 install_homebrew() {
   if command -v brew >/dev/null 2>&1; then
     log "Homebrew already installed"
@@ -144,14 +180,27 @@ install_homebrew() {
   fi
 }
 
+BUNDLE_FAILED=0
+MACOS_FAILED=0
+
 install_brewfile() {
   if ! command -v brew >/dev/null 2>&1; then
     echo "brew not found" >&2
     exit 1
   fi
 
+  # brew bundle の vscode 拡張は PATH 上の code / codium / cursor を使う。
+  # ~/.local/bin/cursor は Cursor Agent の CLI で IDE ではないため、
+  # Cursor.app 同梱の CLI を先に見せる。
+  # 参照: Homebrew bundle/extensions/vscode_extension.rb
+  PATH="/Applications/Cursor.app/Contents/Resources/app/bin:${PATH}"
+  export PATH
+
   # https://docs.brew.sh/Manpage#bundle-subcommand
-  run brew bundle --file="${REPO_DIR}/Brewfile"
+  if ! run brew bundle --file="${REPO_DIR}/Brewfile"; then
+    BUNDLE_FAILED=1
+    log "WARN: brew bundle に失敗した項目があります。symlink 以降は続行します"
+  fi
 }
 
 should_link() {
@@ -187,7 +236,12 @@ link_dotfiles() {
     backup_and_link "${REPO_DIR}/nvim/coc-settings.json" "${TARGET_HOME}/.config/nvim/coc-settings.json"
   fi
   if should_link karabiner; then
-    backup_and_link "${REPO_DIR}/karabiner/karabiner.json" "${TARGET_HOME}/.config/karabiner/karabiner.json"
+    # 公式は karabiner.json 単体ではなく ~/.config/karabiner ディレクトリを symlink する。
+    # https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/
+    backup_and_link "${REPO_DIR}/karabiner" "${TARGET_HOME}/.config/karabiner"
+    if [ "$DRY_RUN" -eq 0 ] && [ "$TARGET_HOME" = "$HOME" ]; then
+      launchctl kickstart -k "gui/$(id -u)/org.pqrs.service.agent.Karabiner-Console-User-Server" 2>/dev/null || true
+    fi
   fi
   if should_link linearmouse; then
     backup_and_link "${REPO_DIR}/linearmouse/linearmouse.json" "${TARGET_HOME}/.config/linearmouse/linearmouse.json"
@@ -237,7 +291,10 @@ apply_macos_defaults() {
     "${REPO_DIR}/macos/defaults.sh" --dry-run
     return 0
   fi
-  "${REPO_DIR}/macos/defaults.sh"
+  if ! "${REPO_DIR}/macos/defaults.sh"; then
+    MACOS_FAILED=1
+    log "WARN: macos defaults に失敗した項目があります。fisher / vim-plug は続行します"
+  fi
 }
 
 install_vimplug() {
@@ -304,6 +361,7 @@ if [ "$SKIP_BREW" -eq 0 ]; then
   if [ "$TARGET_HOME" != "$HOME" ]; then
     log "TARGET_HOME が実際の HOME と違うので brew は実行しません"
   else
+    ensure_sudo
     install_homebrew
     install_brewfile
   fi
@@ -323,6 +381,11 @@ if [ "$SKIP_EXTRAS" -eq 0 ]; then
     install_vimplug
     print_shell_hint
   fi
+fi
+
+if [ "$BUNDLE_FAILED" -eq 1 ] || [ "$MACOS_FAILED" -eq 1 ]; then
+  log "done (brew bundle または macos defaults に失敗あり。上のログを確認してください)"
+  exit 1
 fi
 
 log "done"
