@@ -354,9 +354,17 @@ nnoremap <leader>f :Telescope find_files<CR>
 nnoremap <leader>g :Telescope live_grep<CR>
 nnoremap <leader>b :Telescope buffers<CR>
 nnoremap <leader>h :Telescope help_tags<CR>
+" find_files は一覧を出してからファイル名で絞る。中身検索は live_grep（,g）。
+" prompt で coc 補完がキーを食うと入力が結果に反映されない。
+" https://github.com/neoclide/coc.nvim/blob/master/doc/coc.txt （b:coc_suggest_disable）
+augroup telescope_coc
+  autocmd!
+  autocmd FileType TelescopePrompt let b:coc_suggest_disable = 1
+augroup END
 lua << EOF
 require("telescope").setup({
   defaults = {
+    initial_mode = "insert",
     file_ignore_patterns = { "node_modules", ".git" },
   },
 })
@@ -385,6 +393,8 @@ require("bufferline").setup({
 EOF
 nnoremap <silent> <S-h> <Cmd>BufferLineCyclePrev<CR>
 nnoremap <silent> <S-l> <Cmd>BufferLineCycleNext<CR>
+nnoremap <silent> gT <Cmd>BufferLineCyclePrev<CR>
+nnoremap <silent> gt <Cmd>BufferLineCycleNext<CR>
 nnoremap <silent> <leader>1 <Cmd>BufferLineGoToBuffer 1<CR>
 nnoremap <silent> <leader>2 <Cmd>BufferLineGoToBuffer 2<CR>
 nnoremap <silent> <leader>3 <Cmd>BufferLineGoToBuffer 3<CR>
