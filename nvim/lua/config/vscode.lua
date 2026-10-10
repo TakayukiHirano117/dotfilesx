@@ -29,7 +29,7 @@ map("n", "<leader>=", act("editor.action.formatDocument"), s)
 map("n", "g[", act("workbench.action.editor.previousChange"), s)
 map("n", "g]", act("workbench.action.editor.nextChange"), s)
 for _, k in ipairs({ "grr", "gri", "grt", "gra", "grn", "grx" }) do pcall(vim.keymap.del, { "n", "x" }, k) end
-map("n", "gr", act("editor.action.goToReferences"), { silent = true, nowait = true })
+map("n", "gr", act("references-view.findReferences"), { silent = true, nowait = true })
 map("n", "gi", act("editor.action.goToImplementation"), { silent = true, nowait = true })
 map("n", "gy", act("editor.action.goToTypeDefinition"), { silent = true, nowait = true })
 map("n", "[g", act("editor.action.marker.prev"), s)
