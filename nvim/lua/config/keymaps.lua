@@ -62,20 +62,3 @@ local function close_buffer()
 end
 vim.keymap.set("n", "<leader>q", close_buffer, { silent = true, desc = "バッファを閉じる" })
 vim.keymap.set("n", "<C-q>", close_buffer, { silent = true, desc = "バッファを閉じる" })
-
--- 参照リスト（quickfix）：q で閉じる、o で開いてリストも閉じる
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "qf",
-  callback = function(ev)
-    local o = { buffer = ev.buf, silent = true, nowait = true }
-    vim.keymap.set("n", "q", "<Cmd>cclose<CR>", o)
-    vim.keymap.set("n", "o", "<CR><Cmd>cclose<CR>", o)
-  end,
-})
--- どこからでも参照リストを開閉
-vim.keymap.set("n", "<leader>c", function()
-  for _, w in ipairs(vim.fn.getwininfo()) do
-    if w.quickfix == 1 then return vim.cmd("cclose") end
-  end
-  vim.cmd("copen")
-end, { silent = true, desc = "参照リストの開閉" })
