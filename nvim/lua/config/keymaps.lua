@@ -61,3 +61,4 @@ local function close_buffer()
   if vim.api.nvim_buf_is_valid(cur) then vim.cmd("bdelete " .. cur) end
 end
 vim.keymap.set("n", "<leader>q", close_buffer, { silent = true, desc = "バッファを閉じる" })
+vim.keymap.set("n", "<C-q>", close_buffer, { silent = true, desc = "バッファを閉じる" })
