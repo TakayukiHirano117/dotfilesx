@@ -40,3 +40,24 @@ map("n", "<leader>ws", "<Cmd>StripWhitespace<CR>", s)
 map("x", "<leader>ws", ":StripWhitespace<CR>", s)
 map("n", "]w", "<Cmd>NextTrailingWhitespace<CR>", s)
 map("n", "[w", "<Cmd>PrevTrailingWhitespace<CR>", s)
+
+-- バッファだけ閉じてウィンドウ（レイアウト）は残す
+local function close_buffer()
+  local cur = vim.api.nvim_get_current_buf()
+  if vim.bo[cur].modified then
+    vim.notify("未保存の変更があります（:w してから閉じてください）", vim.log.levels.WARN)
+    return
+  end
+  local listed = vim.tbl_filter(function(b)
+    return vim.bo[b].buflisted and b ~= cur
+  end, vim.api.nvim_list_bufs())
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_buf(win) == cur then
+      vim.api.nvim_win_call(win, function()
+        if #listed > 0 then vim.cmd("bprevious") else vim.cmd("enew") end
+      end)
+    end
+  end
+  if vim.api.nvim_buf_is_valid(cur) then vim.cmd("bdelete " .. cur) end
+end
+vim.keymap.set("n", "<leader>q", close_buffer, { silent = true, desc = "バッファを閉じる" })
